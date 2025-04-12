@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}任务列表 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-4">待处理快递</h2>
+                
+                {% if pending_shipments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>运单号</th>
+                                    <th>发件人</th>
+                                    <th>收件人</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for shipment in pending_shipments %}
+                                    <tr>
+                                        <td>{{ shipment.tracking_number }}</td>
+                                        <td>{{ shipment.sender.username }}</td>
+                                        <td>{{ shipment.receiver.username }}</td>
+                                        <td>{{ shipment.created_at|date:"Y-m-d H:i" }}</td>
+                                        <td>
+                                            <a href="{% url 'logistics:create_record' shipment.tracking_number %}" class="btn btn-sm btn-success">接单处理</a>
+                                            <a href="{% url 'shipments:shipment_detail' shipment.tracking_number %}" class="btn btn-sm btn-outline-secondary">查看详情</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        暂无待处理快递
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">运输中快递</h2>
+                
+                {% if in_transit_shipments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>运单号</th>
+                                    <th>发件人</th>
+                                    <th>收件人</th>
+                                    <th>状态</th>
+                                    <th>更新时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for shipment in in_transit_shipments %}
+                                    <tr>
+                                        <td>{{ shipment.tracking_number }}</td>
+                                        <td>{{ shipment.sender.username }}</td>
+                                        <td>{{ shipment.receiver.username }}</td>
+                                        <td>
+                                            {% if shipment.status == 'picked_up' %}
+                                                <span class="badge bg-info">已取件</span>
+                                            {% elif shipment.status == 'in_transit' %}
+                                                <span class="badge bg-primary">运输中</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ shipment.updated_at|date:"Y-m-d H:i" }}</td>
+                                        <td>
+                                            <a href="{% url 'logistics:create_record' shipment.tracking_number %}" class="btn btn-sm btn-primary">添加记录</a>
+                                            <a href="{% url 'shipments:shipment_detail' shipment.tracking_number %}" class="btn btn-sm btn-outline-secondary">查看详情</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        暂无运输中快递
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

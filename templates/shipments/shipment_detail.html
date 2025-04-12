@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}快递单详情 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-4">快递单详情</h2>
+                <div class="alert alert-primary">
+                    <h4>运单号: {{ shipment.tracking_number }}</h4>
+                    <p class="mb-0">状态: 
+                        {% if shipment.status == 'pending' %}
+                            <span class="badge bg-warning">待处理</span>
+                        {% elif shipment.status == 'picked_up' %}
+                            <span class="badge bg-info">已取件</span>
+                        {% elif shipment.status == 'in_transit' %}
+                            <span class="badge bg-primary">运输中</span>
+                        {% elif shipment.status == 'delivered' %}
+                            <span class="badge bg-success">已送达</span>
+                        {% elif shipment.status == 'completed' %}
+                            <span class="badge bg-secondary">已完成</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>发件信息</h5>
+                        <p><strong>发件人:</strong> {{ shipment.sender.username }}</p>
+                        <p><strong>电话:</strong> {{ shipment.sender.phone }}</p>
+                        <p><strong>取件地址:</strong> {{ shipment.pickup_address }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>收件信息</h5>
+                        <p><strong>收件人:</strong> {{ shipment.receiver.username }}</p>
+                        <p><strong>电话:</strong> {{ shipment.receiver.phone }}</p>
+                        <p><strong>送达地址:</strong> {{ shipment.delivery_address }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>包裹信息</h5>
+                        <p><strong>重量:</strong> {{ shipment.weight }} kg</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>时间信息</h5>
+                        <p><strong>创建时间:</strong> {{ shipment.created_at|date:"Y-m-d H:i" }}</p>
+                        {% if shipment.estimated_delivery %}
+                            <p><strong>预计送达:</strong> {{ shipment.estimated_delivery|date:"Y-m-d H:i" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h5>包裹描述</h5>
+                    <p>{{ shipment.description }}</p>
+                </div>
+                
+                {% if user.user_type == 'staff' and shipment.status == 'pending' %}
+                    <div class="mt-4">
+                        <a href="{% url 'logistics:create_record' shipment.tracking_number %}" class="btn btn-success">处理快递</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-4">物流记录</h3>
+                
+                {% if shipment.logistics_records.all %}
+                    <div class="timeline">
+                        {% for record in shipment.logistics_records.all %}
+                            <div class="timeline-item mb-4">
+                                <h5>{{ record.get_event_type_display }}</h5>
+                                <p class="text-muted">{{ record.timestamp|date:"Y-m-d H:i" }}</p>
+                                <p><strong>处理人员:</strong> {{ record.handler.username }}</p>
+                                <p><strong>地点:</strong> {{ record.location }}</p>
+                                <p>{{ record.description }}</p>
+                            </div>
+                            {% if not forloop.last %}
+                                <hr>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        暂无物流记录
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-3">操作</h3>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'shipments:shipment_list' %}" class="btn btn-outline-primary">返回列表</a>
+                    
+                    {% if user.user_type == 'staff' %}
+                        <a href="{% url 'logistics:create_record' shipment.tracking_number %}" class="btn btn-success">添加物流记录</a>
+                    {% endif %}
+                </div>
+                
+                {% if user.user_type == 'receiver' and shipment.status == 'delivered' %}
+                    <div class="mt-3">
+                        <form method="post" action="{% url 'shipments:confirm_receipt' shipment.tracking_number %}">
+                            {% csrf_token %}
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">确认收货</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

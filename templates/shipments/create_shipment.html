@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}创建快递单 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">创建新快递单</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="receiver" class="form-label">收件人</label>
+                            <select name="receiver" id="receiver" class="form-select" required>
+                                <option value="">选择收件人</option>
+                                {% for user in user_list %}
+                                    {% if user.user_type == 'receiver' %}
+                                        <option value="{{ user.id }}">{{ user.username }} - {{ user.phone }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label">包裹重量 (kg)</label>
+                            <input type="number" name="weight" id="weight" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">包裹描述</label>
+                        <textarea name="description" id="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pickup_address" class="form-label">取件地址</label>
+                        <textarea name="pickup_address" id="pickup_address" class="form-control" rows="2" required>{{ user.address }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="delivery_address" class="form-label">送达地址</label>
+                        <textarea name="delivery_address" id="delivery_address" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">创建快递单</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

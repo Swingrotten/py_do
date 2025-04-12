@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4">欢迎使用快递流转系统</h1>
+    <p class="lead">快速、安全、便捷的快递服务</p>
+    
+    {% if user.is_authenticated %}
+        {% if user.user_type == 'sender' %}
+            <div class="mt-4">
+                <a href="{% url 'shipments:create_shipment' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-seam"></i> 创建快递单
+                </a>
+                <a href="{% url 'shipments:shipment_list' %}" class="btn btn-outline-primary btn-lg ms-2">
+                    <i class="bi bi-list-ul"></i> 查看我的快递
+                </a>
+            </div>
+        {% elif user.user_type == 'staff' %}
+            <div class="mt-4">
+                <a href="{% url 'logistics:task_list' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-clipboard-check"></i> 查看任务列表
+                </a>
+                <a href="{% url 'shipments:shipment_list' %}" class="btn btn-outline-primary btn-lg ms-2">
+                    <i class="bi bi-boxes"></i> 所有快递单
+                </a>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <a href="{% url 'shipments:shipment_list' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box"></i> 查看我的快递
+                </a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="mt-4">
+            <a href="{% url 'users:login' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-door-open"></i> 登录
+            </a>
+            <a href="{% url 'users:register' %}" class="btn btn-outline-primary btn-lg ms-2">
+                <i class="bi bi-person-plus"></i> 注册
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-primary mb-3">
+                    <i class="bi bi-rocket"></i>
+                </div>
+                <h5 class="card-title">快速发货</h5>
+                <p class="card-text">简单几步，轻松完成快递单创建，让您的包裹立即启程。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-primary mb-3">
+                    <i class="bi bi-geo-alt"></i>
+                </div>
+                <h5 class="card-title">实时追踪</h5>
+                <p class="card-text">随时随地查看包裹位置，掌握最新物流动态。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-primary mb-3">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h5 class="card-title">安全可靠</h5>
+                <p class="card-text">严格的身份验证机制，确保您的包裹安全送达。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 使用步骤 -->
+<div class="mt-5">
+    <h2 class="text-center mb-4">如何使用</h2>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <h3 class="m-0">1</h3>
+                </div>
+                <div>
+                    <h5 class="mb-1">注册账号</h5>
+                    <p class="mb-0 text-muted">创建个人账户</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <h3 class="m-0">2</h3>
+                </div>
+                <div>
+                    <h5 class="mb-1">填写信息</h5>
+                    <p class="mb-0 text-muted">输入收件人信息</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <h3 class="m-0">3</h3>
+                </div>
+                <div>
+                    <h5 class="mb-1">创建快递单</h5>
+                    <p class="mb-0 text-muted">生成唯一追踪号</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <h3 class="m-0">4</h3>
+                </div>
+                <div>
+                    <h5 class="mb-1">追踪包裹</h5>
+                    <p class="mb-0 text-muted">实时查看物流状态</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
